@@ -1,6 +1,8 @@
 # --------------------------------------------------------
 # gradio demo
 # --------------------------------------------------------
+import matplotlib
+matplotlib.use('Agg')  # Use a non-interactive backend
 
 import argparse
 import math
@@ -258,6 +260,7 @@ def get_reconstructed_scene_realtime(args, model, device, silent, image_size, fi
         colors2 = rgb(view2['img'][batch_idx])
         xyzrgb1 = np.concatenate([pts1[batch_idx], colors1], axis=-1)   #(H, W, 6)
         xyzrgb2 = np.concatenate([pts2[batch_idx], colors2], axis=-1)
+        import pdb; pdb.set_trace()
         np.save(save_folder + '/pts3d1_p' + str(batch_idx) + '.npy', xyzrgb1)
         np.save(save_folder + '/pts3d2_p' + str(batch_idx) + '.npy', xyzrgb2)
 

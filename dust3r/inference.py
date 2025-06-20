@@ -97,7 +97,6 @@ def inference(pairs, model, device, batch_size=8, verbose=True):
         result.append(to_cpu(res))
 
     result = collate_with_cat(result, lists=multiple_shapes)
-
     return result
 
 

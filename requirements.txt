@@ -1,17 +1,17 @@
 # minimal requirements for inference
-torch
-torchvision
+# torch
+# torchvision
 roma
 gradio
-matplotlib
-tqdm
-opencv-python
-scipy
-einops
+# matplotlib
+# tqdm
+# opencv-python
+# scipy
+# einops
 gdown
 trimesh
 pyglet<2
-huggingface-hub[torch]>=0.22
+# huggingface-hub[torch]>=0.22
 
 # for camera trajectory
 evo

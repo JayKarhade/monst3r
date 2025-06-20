@@ -1,3 +1,6 @@
+import matplotlib
+matplotlib.use("Agg")
+# import pdb; pdb.set_trace()
 import os
 import re
 from copy import deepcopy

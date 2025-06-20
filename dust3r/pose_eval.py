@@ -103,6 +103,9 @@ def eval_pose_estimation_dist(args, model, device, img_path, save_dir=None, mask
             ) 
 
             output = inference(pairs, model, device, batch_size=1, verbose=not silent)
+            print(type(output))
+            print(output.keys())
+            import pdb; pdb.set_trace()
 
             with torch.enable_grad():
                 if len(imgs) > 2:

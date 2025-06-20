@@ -6,14 +6,14 @@ from glob import glob
 from PIL import Image
 
 # Set the path to your dataset directory
-dataset_dir = '../data/nyu-v2/val/official/'
+dataset_dir = '../data/nyu_v2/val/official/'
 
 # Get a list of all .h5 files in the dataset directory
 file_paths = glob(os.path.join(dataset_dir, '*.h5'))
 
 # Create output directories for images and depth data
-output_image_dir = '../data/nyu-v2/val/nyu_images/'
-output_depth_dir = '../data/nyu-v2/val/nyu_depths/'
+output_image_dir = '../data/nyu_v2/val/nyu_images/'
+output_depth_dir = '../data/nyu_v2/val/nyu_depths/'
 os.makedirs(output_image_dir, exist_ok=True)
 os.makedirs(output_depth_dir, exist_ok=True)
 
@@ -49,8 +49,8 @@ import numpy as np
 from PIL import Image
 
 # Paths
-depth_npy_dir = '../data/nyu-v2/val/nyu_depths'
-output_img_dir = '../data/nyu-v2/val/nyu_depth_imgs'
+depth_npy_dir = '../data/nyu_v2/val/nyu_depths'
+output_img_dir = '../data/nyu_v2/val/nyu_depth_imgs'
 
 # Ensure the output directory exists
 os.makedirs(output_img_dir, exist_ok=True)

@@ -129,5 +129,27 @@ class PairViewer (BasePCOptimizer):
                 pts3d.append(torch.from_numpy(pts).to(device=self.device))
         return pts3d
 
+    def depth_to_pts3d_identity(self, raw_pts=False):
+        pts3d = []
+        if raw_pts:
+            im_poses = self.get_im_poses()
+            if im_poses[0].sum() == 4:
+                pts3d.append(self.pred_i['0_1'])
+                pts3d.append(self.pred_j['0_1'])
+            else:
+                pts3d.append(self.pred_j['1_0'])
+                pts3d.append(self.pred_i['1_0'])
+        else:
+            for d, intrinsics in zip(self.depth, self.get_intrinsics()):
+                # Create identity pose (4x4 transformation matrix)
+                identity_pose = np.eye(4)
+                
+                # Use identity pose instead of actual camera pose
+                pts, _ = depthmap_to_absolute_camera_coordinates(d.cpu().numpy(),
+                                                            intrinsics.cpu().numpy(),
+                                                            identity_pose)
+                pts3d.append(torch.from_numpy(pts).to(device=self.device))
+        return pts3d
+    
     def forward(self):
         return float('nan')
