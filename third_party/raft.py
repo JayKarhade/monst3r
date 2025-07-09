@@ -54,7 +54,7 @@ def load_RAFT(model_path=None):
         net = RAFT(args)
     else: # RAFT2
         parser = argparse.ArgumentParser()
-        parser.add_argument('--cfg', help='experiment configure file name', default="third_party/RAFT/core/configs/congif_spring_M.json")
+        parser.add_argument('--cfg', help='experiment configure file name', default="/ocean/projects/cis220039p/mdt2/jkarhade/Any4D/benchmarking/monst3r/third_party/RAFT/core/configs/congif_spring_M.json")
         parser.add_argument('--model', help='checkpoint path', default=model_path)
         parser.add_argument('--device', help='inference device', type=str, default='cpu')
         args = parse_args(parser)

@@ -58,7 +58,7 @@ dataset_metadata = {
         'process_func': lambda args, img_path: process_scannet(args, img_path),
     },
     'tum': {
-        'img_path': "data/tum",
+        'img_path': "/ocean/projects/cis220039p/mdt2/jkarhade/Any4D/benchmarking/monst3r/data/tum",
         'mask_path': None,
         'dir_path_func': lambda img_path, seq: os.path.join(img_path, seq, 'rgb_90'),
         'gt_traj_func': lambda img_path, anno_path, seq: os.path.join(img_path, seq, 'groundtruth_90.txt'),

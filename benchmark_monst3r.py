@@ -28,7 +28,7 @@ from dust3r.cloud_opt import global_aligner, GlobalAlignerMode
 
 # Import dataset modules
 from anymap.datasets.multi_view_motion.vkitti2_motion import VKITTI2MultiView_Motion
-from anymap.datasets.multi_view_motion.stereo4d import Stereo4DMultiView_Motion
+from anymap.datasets.multi_view_motion.stereo4d_motion import Stereo4DMultiView_Motion
 from anymap.datasets.multi_view_motion.pd4d_motion import PD4DMultiView_Motion
 from anymap.datasets.multi_view_motion.tapvid3d import TAPVID3DMultiView_Motion
 # Import visualization utilities

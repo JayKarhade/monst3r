@@ -263,7 +263,7 @@ class PointCloudOptimizer(BasePCOptimizer):
         get_valid_flow_mask = OccMask(th=3.0)
         pair_imgs = [np.stack(self.imgs)[self._ei], np.stack(self.imgs)[self._ej]]
 
-        flow_net = load_RAFT() if sintel_ckpt else load_RAFT("third_party/RAFT/models/Tartan-C-T-TSKH-spring540x960-M.pth")
+        flow_net = load_RAFT() if sintel_ckpt else load_RAFT("/ocean/projects/cis220039p/mdt2/jkarhade/Any4D/benchmarking/monst3r/third_party/RAFT/models/Tartan-C-T-TSKH-spring540x960-M.pth")
         flow_net = flow_net.to(device)
         flow_net.eval()
 
