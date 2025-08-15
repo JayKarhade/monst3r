@@ -95,6 +95,7 @@ def eval_pose_estimation_dist(args, model, device, img_path, save_dir=None, mask
                 filelist, size=load_img_size, verbose=False,
                 dynamic_mask_root=mask_path_seq, crop=not args.no_crop
             )
+            import pdb; pdb.set_trace()
             if args.eval_dataset == 'davis' and len(imgs) > 95:
                 # use swinstride-4
                 scene_graph_type = scene_graph_type.replace('5', '4')
@@ -105,7 +106,6 @@ def eval_pose_estimation_dist(args, model, device, img_path, save_dir=None, mask
             output = inference(pairs, model, device, batch_size=1, verbose=not silent)
             print(type(output))
             print(output.keys())
-            import pdb; pdb.set_trace()
 
             with torch.enable_grad():
                 if len(imgs) > 2:

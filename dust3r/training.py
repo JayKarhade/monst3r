@@ -127,6 +127,115 @@ def get_args_parser():
     parser.add_argument('--output_dir', default='./results/tmp', type=str, help="path where to save the output")
     return parser
 
+def get_args_parser_any4d():
+    parser = argparse.ArgumentParser('any4d eval', add_help=False)
+    # model and criterion
+    parser.add_argument('--model', default="AsymmetricCroCo3DStereo(pos_embed='RoPE100', patch_embed_cls='ManyAR_PatchEmbed', \
+                        img_size=(512, 512), head_type='dpt', output_mode='pts3d', depth_mode=('exp', -inf, inf), conf_mode=('exp', 1, inf), \
+                        enc_embed_dim=1024, enc_depth=24, enc_num_heads=16, dec_embed_dim=768, dec_depth=12, dec_num_heads=12, freeze='encoder')",
+                        type=str, help="string containing the model to build")
+    parser.add_argument('--pretrained', default=None, help='path of a starting checkpoint')
+    parser.add_argument('--train_criterion', default="ConfLoss(Regr3D(L21, norm_mode='avg_dis'), alpha=0.2)",
+                        type=str, help="train criterion")
+    parser.add_argument('--test_criterion', default=None, type=str, help="test criterion")
+
+    # dataset
+    parser.add_argument('--train_dataset', default='[None]', type=str, help="training set")
+    parser.add_argument('--test_dataset', default='[None]', type=str, help="testing set")
+
+    # training
+    parser.add_argument('--seed', default=0, type=int, help="Random seed")
+    parser.add_argument('--batch_size', default=64, type=int,
+                        help="Batch size per GPU (effective batch size is batch_size * accum_iter * # gpus")
+    parser.add_argument('--accum_iter', default=1, type=int,
+                        help="Accumulate gradient iterations (for increasing the effective batch size under memory constraints)")
+    parser.add_argument('--epochs', default=800, type=int, help="Maximum number of epochs for the scheduler")
+    parser.add_argument('--weight_decay', type=float, default=0.05, help="weight decay (default: 0.05)")
+    parser.add_argument('--lr', type=float, default=None, metavar='LR', help='learning rate (absolute lr)')
+    parser.add_argument('--blr', type=float, default=1.5e-4, metavar='LR',
+                        help='base learning rate: absolute_lr = base_lr * total_batch_size / 256')
+    parser.add_argument('--min_lr', type=float, default=0., metavar='LR',
+                        help='lower lr bound for cyclic schedulers that hit 0')
+    parser.add_argument('--warmup_epochs', type=int, default=40, metavar='N', help='epochs to warmup LR')
+    parser.add_argument('--amp', type=int, default=0,
+                        choices=[0, 1], help="Use Automatic Mixed Precision for pretraining")
+    parser.add_argument("--cudnn_benchmark", action='store_true', default=False,
+                        help="set cudnn.benchmark = False")
+    parser.add_argument("--eval_only", action='store_true', default=False)
+    parser.add_argument("--fixed_eval_set", action='store_true', default=False)
+    parser.add_argument('--resume', default=None, type=str, help='path to latest checkpoint (default: none)')
+
+    # others
+    parser.add_argument('--num_workers', default=8, type=int)
+    parser.add_argument('--world_size', default=1, type=int, help='number of distributed processes')
+    parser.add_argument('--local_rank', default=-1, type=int)
+    parser.add_argument('--dist_url', default='env://', help='url used to set up distributed training')
+    parser.add_argument('--eval_freq', type=int, default=1, help='Test loss evaluation frequency')
+    parser.add_argument('--save_freq', default=1, type=int,
+                        help='frequence (number of epochs) to save checkpoint in checkpoint-last.pth')
+    parser.add_argument('--keep_freq', default=5, type=int,
+                        help='frequence (number of epochs) to save checkpoint in checkpoint-%d.pth')
+    parser.add_argument('--print_freq', default=20, type=int,
+                        help='frequence (number of iterations) to print infos while training')
+    parser.add_argument('--wandb', action='store_true', default=False, help='use wandb for logging')
+    parser.add_argument('--num_save_visual', default=1, type=int, help='number of visualizations to save')
+    
+    # switch mode for train / eval pose / eval depth
+    parser.add_argument('--mode', default='train', type=str, help='train / eval_pose / eval_depth')
+
+    # for pose eval
+    parser.add_argument('--pose_eval_freq', default=0, type=int, help='pose evaluation frequency')
+    parser.add_argument('--pose_eval_stride', default=1, type=int, help='stride for pose evaluation')
+    parser.add_argument('--scene_graph_type', default='swinstride-5-noncyclic', type=str, help='scene graph window size')
+    parser.add_argument('--save_best_pose', action='store_true', default=False, help='save best pose')
+    parser.add_argument('--n_iter', default=300, type=int, help='number of iterations for pose optimization')
+    parser.add_argument('--save_pose_qualitative', action='store_true', default=False, help='save qualitative pose results')
+    parser.add_argument('--temporal_smoothing_weight', default=0.01, type=float, help='temporal smoothing weight for pose optimization')
+    parser.add_argument('--not_shared_focal', action='store_true', default=False, help='use shared focal length for pose optimization')
+    parser.add_argument('--use_gt_focal', action='store_true', default=False, help='use ground truth focal length for pose optimization')
+    parser.add_argument('--pose_schedule', default='linear', type=str, help='pose optimization schedule')
+    
+    parser.add_argument('--flow_loss_weight', default=0.01, type=float, help='flow loss weight for pose optimization')
+    parser.add_argument('--flow_loss_fn', default='smooth_l1', type=str, help='flow loss type for pose optimization')
+    parser.add_argument('--use_gt_mask', action='store_true', default=False, help='use gt mask for pose optimization, for sintel/davis')
+    parser.add_argument('--motion_mask_thre', default=0.35, type=float, help='motion mask threshold for pose optimization')
+    parser.add_argument('--sam2_mask_refine', action='store_true', default=False, help='use sam2 mask refine for the motion for pose optimization')
+    parser.add_argument('--flow_loss_start_epoch', default=0.1, type=float, help='start epoch for flow loss')
+    parser.add_argument('--flow_loss_thre', default=20, type=float, help='threshold for flow loss')
+    parser.add_argument('--pxl_thresh', default=50.0, type=float, help='threshold for flow loss')
+    parser.add_argument('--depth_regularize_weight', default=0.0, type=float, help='depth regularization weight for pose optimization')
+    parser.add_argument('--translation_weight', default=1, type=float, help='translation weight for pose optimization')
+    parser.add_argument('--silent', action='store_true', default=False, help='silent mode for pose evaluation')
+    parser.add_argument('--full_seq', action='store_true', default=False, help='use full sequence for pose evaluation')
+    parser.add_argument('--seq_list', nargs='+', default=None, help='list of sequences for pose evaluation')
+
+    parser.add_argument('--eval_dataset', type=str, default='sintel', 
+                    choices=['davis', 'kitti', 'bonn', 'scannet', 'tum', 'nyu', 'sintel'], 
+                    help='choose dataset for pose evaluation')
+
+    # for monocular depth eval
+    parser.add_argument('--no_crop', action='store_true', default=False, help='do not crop the image for monocular depth evaluation')
+
+    # output dir
+    parser.add_argument('--output_dir', default='./results/tmp', type=str, help="path where to save the output")
+
+    # Any4D configs
+
+    parser.add_argument("--machine", default="psc")
+    parser.add_argument("--config_dir", default="/ocean/projects/cis220039p/mdt2/jkarhade/Any4D/configs")
+    parser.add_argument("--root_data_dir", default="//ocean/projects/cis220039p/mdt2/datasets/dydust3r")
+    parser.add_argument("--root_experiments_dir", default="/ocean/projects/cis220039p/mdt2/jkarhade/Any4D/any4d_experiments")
+    parser.add_argument(
+        "--root_pretrained_checkpoints_dir", default="/mnt/xri_mapsresearch/code/nkeetha/AnyMap/checkpoints"
+    )
+    parser.add_argument(
+        "--root_uniception_pretrained_checkpoints_dir",
+        default="/mnt/xri_mapsresearch/code/nkeetha/AnyMap/UniCeption/checkpoints",
+    )
+    parser.add_argument("--viz", action="store_true")
+    
+    return parser
+
 def load_model(args, device):
     # model
     print('Loading model: {:s}'.format(args.model))
